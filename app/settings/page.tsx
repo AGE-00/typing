@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
 import { Card, SecondaryButton } from '@/components/ui';
-import { clearLocalData, exportLocalData, getSettings, importLocalData, updateSettings } from '@/lib/db';
+import { MAX_LOCAL_DATA_IMPORT_BYTES, clearLocalData, exportLocalData, getSettings, importLocalData, updateSettings } from '@/lib/db';
 import { dispatchMotionPreferenceChange } from '@/lib/motion';
 import type { AnimationPreference, PersonalizationMode, UserSettings } from '@/lib/types';
 
@@ -56,6 +56,7 @@ export default function SettingsPage() {
   const handleImport = async (file?: File) => {
     if (!file) return;
     try {
+      if (file.size > MAX_LOCAL_DATA_IMPORT_BYTES) throw new Error('Import file is too large');
       const imported = await importLocalData(JSON.parse(await file.text()));
       const nextSettings = await getSettings();
       setSettings(nextSettings);

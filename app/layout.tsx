@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import { MotionProvider } from '@/components/motion/MotionProvider';
 import { Nav } from '@/components/nav';
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
   description: '日本語ローマ字入力をデータで改善するタイピング練習アプリ',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ja" data-motion="minimal" suppressHydrationWarning><head><meta name="color-scheme" content="light dark" /><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body className={`${geistSans.variable} ${geistMono.variable}`}><MotionProvider /><Nav />{children}</body></html>;
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
+  return <html lang="ja" data-motion="minimal" suppressHydrationWarning><head><meta name="color-scheme" content="light dark" /><script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body className={`${geistSans.variable} ${geistMono.variable}`}><MotionProvider /><Nav />{children}</body></html>;
 }

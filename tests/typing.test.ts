@@ -8,6 +8,7 @@ import {
 } from '@/lib/typing/romanization';
 import { aggregateKeyStats, analyzeSession, aggregateRomanizationHabits } from '@/lib/typing/analysis';
 import type { KeyStroke, PracticeSentence } from '@/lib/types';
+import { importLocalData } from '@/lib/db';
 
 describe('romanization', () => {
   it('builds a primary romanized input for Japanese kana text', () => {
@@ -141,5 +142,48 @@ describe('session analysis', () => {
       count: 1,
       extraKeystrokes: 2,
     });
+  });
+});
+
+describe('local data import validation', () => {
+  it('rejects non-finite numbers before writing to IndexedDB', async () => {
+    await expect(importLocalData({
+      version: 1,
+      sessions: [{
+        id: 's1',
+        sentenceId: 'p1',
+        japanese: 'テスト',
+        reading: 'てすと',
+        targetRomanized: 'tesuto',
+        acceptedRomanizations: ['tesuto'],
+        typed: 'tesuto',
+        startedAt: 1,
+        endedAt: 2,
+        summary: {
+          totalTyped: Number.NaN,
+          correctTyped: 1,
+          mistakesCount: 0,
+          accuracy: 100,
+          wpm: 1,
+          kpm: 5,
+          durationMs: 1000,
+          weakKeys: [],
+          keyStats: [],
+          slowKeys: [],
+          mistakes: [],
+        },
+      }],
+      promptResults: [],
+      inputEvents: [],
+    })).rejects.toThrow('Invalid import data');
+  });
+
+  it('rejects oversized backup payloads before record validation', async () => {
+    await expect(importLocalData({
+      version: 1,
+      sessions: Array.from({ length: 2001 }, () => ({})),
+      promptResults: [],
+      inputEvents: [],
+    })).rejects.toThrow('Import data is too large');
   });
 });
