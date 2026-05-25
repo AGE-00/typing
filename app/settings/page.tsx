@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
 import { Card, SecondaryButton } from '@/components/ui';
 import { clearLocalData, exportLocalData, getSettings, importLocalData, updateSettings } from '@/lib/db';
 import { dispatchMotionPreferenceChange } from '@/lib/motion';
@@ -68,12 +69,12 @@ export default function SettingsPage() {
   };
 
   return <main className="mx-auto max-w-4xl px-4 pb-16">
-    <div className="kinetic-rise mb-6">
+    <MotionSection className="kinetic-rise mb-6">
       <h1 className="text-4xl font-black">設定</h1>
       <p className="mt-2 text-slate-600">入力、動き、出題の寄せ方を調整します。</p>
-    </div>
-    <Card className="space-y-6">
-      <section>
+    </MotionSection>
+    <MotionGroup><Card className="space-y-6">
+      <MotionSection as="section">
         <h2 className="font-bold">アニメーション設定</h2>
         <p className="mt-1 text-sm text-slate-600">入力中の動きの量を選びます。</p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -88,8 +89,8 @@ export default function SettingsPage() {
           </button>)}
         </div>
         <p className="mt-3 text-xs text-slate-500">端末側で動きを減らす設定が有効な場合は、その設定を優先します。</p>
-      </section>
-      <section>
+      </MotionSection>
+      <MotionSection as="section">
         <h2 className="font-bold">ローマ字表示</h2>
         <p className="mt-1 text-sm text-slate-600">表示の基準を選びます。</p>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -103,8 +104,8 @@ export default function SettingsPage() {
             <div className="mt-2 text-sm leading-6 text-slate-600">{help}</div>
           </button>)}
         </div>
-      </section>
-      <section>
+      </MotionSection>
+      <MotionSection as="section">
         <h2 className="font-bold">出題のパーソナライズ</h2>
         <p className="mt-1 text-sm text-slate-600">記録を出題に反映します。</p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -118,12 +119,12 @@ export default function SettingsPage() {
             <div className="mt-2 text-sm leading-6 text-slate-600">{help}</div>
           </button>)}
         </div>
-      </section>
-      <Toggle label="フォーカスモードをデフォルトで有効化" description="練習開始時から、表示をしぼった画面で始めます。" checked={settings.focusModeDefault} onChange={(v) => save({ ...settings, focusModeDefault: v })}/>
-      <Toggle label="厳格モードをデフォルトで有効化" description="1回のミスで終了する練習を標準にします。" checked={settings.strictMode} onChange={(v) => save({ ...settings, strictMode: v })}/>
-      {message ? <p className="text-sm text-blue-700">{message}</p> : null}
-    </Card>
-    <Card className="mt-6 border-red-100">
+      </MotionSection>
+      <MotionSection><Toggle label="フォーカスモードをデフォルトで有効化" description="練習開始時から、表示をしぼった画面で始めます。" checked={settings.focusModeDefault} onChange={(v) => save({ ...settings, focusModeDefault: v })}/></MotionSection>
+      <MotionSection><Toggle label="厳格モードをデフォルトで有効化" description="1回のミスで終了する練習を標準にします。" checked={settings.strictMode} onChange={(v) => save({ ...settings, strictMode: v })}/></MotionSection>
+      {message ? <MotionSection as="section"><p className="text-sm text-blue-700">{message}</p></MotionSection> : null}
+    </Card></MotionGroup>
+    <MotionSection><Card className="mt-6 border-red-100">
       <h2 className="font-bold text-red-700">ローカルデータ</h2>
       <p className="mt-2 text-sm text-slate-600">履歴をバックアップ、復元、削除できます。</p>
       <div className="mt-4 flex flex-wrap gap-3">
@@ -132,10 +133,10 @@ export default function SettingsPage() {
         <SecondaryButton className="text-red-700" onClick={async () => { if (confirm('練習履歴を削除しますか？')) { await clearLocalData(); setMessage('練習履歴を削除しました'); } }}>練習履歴を削除</SecondaryButton>
       </div>
       <input ref={importInputRef} className="sr-only" type="file" accept="application/json,.json" onChange={(event) => void handleImport(event.target.files?.[0])} />
-    </Card>
-    <div className="mt-8 border-t border-slate-200 pt-4 text-sm text-slate-500">
+    </Card></MotionSection>
+    <MotionSection className="mt-8 border-t border-slate-200 pt-4 text-sm text-slate-500">
       <Link href="/about" className="hover:text-slate-800">実装ノート</Link>
-    </div>
+    </MotionSection>
   </main>;
 }
 

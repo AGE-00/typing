@@ -1,27 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { KeyboardHeroBackground } from '@/components/KeyboardHeroBackground';
+import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
+import { ScrambleText } from '@/components/motion/ScrambleText';
 import { cn } from '@/lib/utils';
 
 const ctaClass = 'group relative inline-flex min-h-14 items-center justify-center overflow-hidden rounded-full border border-blue-300/40 bg-blue-600 px-7 text-sm font-black text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_0_34px_rgba(37,99,235,0.26)] transition duration-200 hover:-translate-y-0.5 hover:border-blue-200/80 hover:bg-blue-500 hover:shadow-[0_0_0_1px_rgba(191,219,254,0.2),0_18px_54px_rgba(37,99,235,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0 sm:min-h-16 sm:px-9 sm:text-base';
 
 export function HomeLanding() {
-  const reduceMotion = useReducedMotion();
-
   return <main className="hero-gradient relative isolate min-h-[calc(100dvh-5rem)] overflow-hidden">
-    <section className="relative mx-auto grid min-h-[calc(100dvh-9rem)] max-w-6xl items-center gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[0.82fr_1.18fr] lg:gap-6">
-      <motion.div
-        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.36, ease: 'easeOut' }}
+    <MotionGroup
+      as="section"
+      className="relative mx-auto grid min-h-[calc(100dvh-9rem)] max-w-6xl items-center gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[0.82fr_1.18fr] lg:gap-6"
+    >
+      <MotionSection
         className="relative z-10 flex max-w-xl flex-col items-center text-center lg:items-start lg:text-left"
       >
         <p className="font-mono text-xs font-semibold uppercase text-slate-500">Typing Practice</p>
         <h1 className="hero-wordmark mt-5 pb-2 text-5xl font-black leading-[1.08] tracking-tight sm:text-6xl md:text-7xl">
-          JP Typing
+          <ScrambleText text="JP Typing" />
         </h1>
         <Link
           href="/practice"
@@ -35,20 +34,20 @@ export function HomeLanding() {
             <ArrowRight className="ml-2 size-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
           </span>
         </Link>
-      </motion.div>
+      </MotionSection>
 
-      <div className="relative z-0 min-h-[18rem] overflow-hidden lg:min-h-[24rem] lg:overflow-visible">
+      <MotionSection className="relative z-0 min-h-[18rem] overflow-hidden lg:min-h-[24rem] lg:overflow-visible">
         <KeyboardHeroBackground
           className="lg:translate-x-4"
           keyboardUnit="clamp(1.12rem, 2.85vw, 2.05rem)"
           restingOpacity={0.78}
         />
-      </div>
-    </section>
+      </MotionSection>
+    </MotionGroup>
 
-    <footer className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-8 text-xs text-slate-500 sm:flex-row sm:gap-5">
+    <MotionSection as="footer" className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-8 text-xs text-slate-500 sm:flex-row sm:gap-5">
       <span>© 2026 JP Typing. All rights reserved.</span>
       <Link href="/privacy" className="transition hover:text-blue-700">プライバシーポリシー</Link>
-    </footer>
+    </MotionSection>
   </main>;
 }

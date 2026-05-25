@@ -108,12 +108,12 @@ tests/
 
 ## Development commands
 
-npm install
-npm run dev      # Start dev server
-npm run build    # Production build
-npm run start    # Start production server after build
-npm test         # Run Vitest
-npm run lint     # Type check (tsc --noEmit)
+bun install
+bun run dev      # Start dev server
+bun run build    # Production build
+bun run start    # Start production server after build
+bun run test     # Run Vitest
+bun run lint     # Type check (tsc --noEmit)
 
 ## Development notes
 
@@ -128,6 +128,16 @@ npm run lint     # Type check (tsc --noEmit)
 
 After changes, run at minimum:
 
-npm test
-npm run lint
-npm run build
+bun run test
+bun run lint
+bun run build
+
+## Package manager
+
+This project uses Bun 1.3.14 for dependency management and script execution.
+
+Local benchmark notes from the migration:
+
+- Clean install without an existing lockfile: Bun 1.89s, npm 19.02s
+- `lint` / `test`: effectively comparable between Bun and npm
+- `build`: effectively comparable because `next build` dominates runtime

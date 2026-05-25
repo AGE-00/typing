@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
 import { Button, Card, CollapsibleCard, StatCard } from '@/components/ui';
 import { getPromptResults, getSession } from '@/lib/db';
 import type { PracticeSession, PromptResult } from '@/lib/types';
@@ -25,12 +26,12 @@ export default function ResultPage() {
   const weakestKey = s.weakKeys.find((key) => key.mistakes > 0)?.key ?? s.slowKeys[0]?.key ?? '';
   const isFailed = Boolean(session.isFailed);
   return <main className="mx-auto max-w-5xl px-4 pb-16">
-    <div className="kinetic-rise mb-6 flex flex-wrap items-center justify-between gap-3">
+    <MotionSection className="kinetic-rise mb-6 flex flex-wrap items-center justify-between gap-3">
       <div><h1 className="text-4xl font-black">セッション結果</h1><p className="mt-2 text-slate-600">{formatDate(session.endedAt)}</p></div>
       <StatusBadge failed={isFailed} />
-    </div>
+    </MotionSection>
 
-    {isFailed ? <Card className="mb-6 border-red-200 bg-red-50">
+    {isFailed ? <MotionSection><Card className="mb-6 border-red-200 bg-red-50">
       <div className="flex items-center gap-3 text-red-700"><XCircle className="h-7 w-7" /><h2 className="text-2xl font-black">Failed</h2></div>
       <p className="mt-3 text-red-900">Strict Mode中にミスが発生したため、セッションは失敗として保存されました。同じ文に再挑戦するか、弱いキーを重点的に練習しましょう。</p>
       <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -43,16 +44,16 @@ export default function ResultPage() {
         <FailureItem label="対象ローマ字セグメント" value={session.failedTargetRomaji ?? '-'} />
         <FailureItem label="失敗までのKPM" value={s.kpm.toFixed(0)} />
       </div>
-    </Card> : null}
+    </Card></MotionSection> : null}
 
-    <div className="grid gap-4 md:grid-cols-4"><StatCard label="WPM" value={s.wpm.toFixed(1)} /><StatCard label="KPM" value={s.kpm.toFixed(0)} /><StatCard label="正確率" value={formatPercent(s.accuracy)} /><StatCard label="ミス" value={s.mistakesCount} /></div>
-    <div className="mt-4 grid gap-4 md:grid-cols-3"><StatCard label="完了問題数" value={`${session.completedQuestionCount ?? promptResults.filter((r) => r.completed).length}/${session.questionCount ?? 1}`} /><StatCard label="総入力" value={s.totalTyped} /><StatCard label="合計時間" value={`${Math.round(s.durationMs / 1000)}秒`} /></div>
+    <MotionGroup className="grid gap-4 md:grid-cols-4"><MotionSection><StatCard label="WPM" value={s.wpm.toFixed(1)} /></MotionSection><MotionSection><StatCard label="KPM" value={s.kpm.toFixed(0)} /></MotionSection><MotionSection><StatCard label="正確率" value={formatPercent(s.accuracy)} /></MotionSection><MotionSection><StatCard label="ミス" value={s.mistakesCount} /></MotionSection></MotionGroup>
+    <MotionGroup className="mt-4 grid gap-4 md:grid-cols-3"><MotionSection><StatCard label="完了問題数" value={`${session.completedQuestionCount ?? promptResults.filter((r) => r.completed).length}/${session.questionCount ?? 1}`} /></MotionSection><MotionSection><StatCard label="総入力" value={s.totalTyped} /></MotionSection><MotionSection><StatCard label="合計時間" value={`${Math.round(s.durationMs / 1000)}秒`} /></MotionSection></MotionGroup>
 
-    <CollapsibleCard title="問題別結果" className="mt-6"><div className="space-y-3">{promptResults.length ? promptResults.map((result) => <div key={result.id} className={`kinetic-hover rounded-lg p-4 ${result.failed ? 'bg-red-50 ring-1 ring-red-200' : 'bg-slate-50'}`}><div className="flex flex-wrap items-center justify-between gap-2"><div className="font-bold">Question {result.questionIndex + 1}</div><div className={`text-sm font-bold ${result.failed ? 'text-red-700' : 'text-slate-500'}`}>{result.failed ? 'Failed' : result.completed ? 'Completed' : 'Incomplete'}</div></div><div className="mt-2 text-lg font-medium">{result.text}</div><div className="mt-3 grid gap-2 text-sm md:grid-cols-4"><span>正確率 {formatPercent(result.accuracy)}</span><span>KPM {result.kpm.toFixed(0)}</span><span>ミス {result.mistakes}</span><span>入力 {result.correctInputs}/{result.totalInputs}</span></div></div>) : <p className="text-slate-500">問題別データはありません。</p>}</div></CollapsibleCard>
+    <MotionSection><CollapsibleCard title="問題別結果" className="mt-6"><div className="space-y-3">{promptResults.length ? promptResults.map((result) => <div key={result.id} className={`kinetic-hover rounded-lg p-4 ${result.failed ? 'bg-red-50 ring-1 ring-red-200' : 'bg-slate-50'}`}><div className="flex flex-wrap items-center justify-between gap-2"><div className="font-bold">Question {result.questionIndex + 1}</div><div className={`text-sm font-bold ${result.failed ? 'text-red-700' : 'text-slate-500'}`}>{result.failed ? 'Failed' : result.completed ? 'Completed' : 'Incomplete'}</div></div><div className="mt-2 text-lg font-medium">{result.text}</div><div className="mt-3 grid gap-2 text-sm md:grid-cols-4"><span>正確率 {formatPercent(result.accuracy)}</span><span>KPM {result.kpm.toFixed(0)}</span><span>ミス {result.mistakes}</span><span>入力 {result.correctInputs}/{result.totalInputs}</span></div></div>) : <p className="text-slate-500">問題別データはありません。</p>}</div></CollapsibleCard></MotionSection>
 
-    <div className="mt-6 grid gap-4 md:grid-cols-2"><CollapsibleCard title="弱いキー"><KeyList rows={s.weakKeys}/></CollapsibleCard><CollapsibleCard title="反応が遅いキー"><KeyList rows={s.slowKeys}/></CollapsibleCard></div>
-    <CollapsibleCard title="頻出ミス" className="mt-6"><div className="grid gap-2">{s.mistakes.length ? s.mistakes.map((m) => <div key={`${m.expected}-${m.actual}`} className="flex justify-between rounded-lg bg-slate-50 p-3 font-mono"><span>{m.expected} → {m.actual}</span><span>{m.count}回</span></div>) : <p className="text-slate-500">ミスはありません。</p>}</div></CollapsibleCard>
-    <div className="mt-6 flex flex-wrap gap-3"><Link href="/practice"><Button>{isFailed ? 'Strict Modeで再挑戦' : 'もう一度練習'}</Button></Link><Link href={weakestKey ? `/practice?weakKey=${encodeURIComponent(weakestKey)}` : '/practice'}><Button className="bg-slate-900 hover:bg-slate-800">弱点キーを練習</Button></Link><Link href="/analysis"><Button className="bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50">詳しく分析</Button></Link></div>
+    <MotionGroup className="mt-6 grid gap-4 md:grid-cols-2"><MotionSection><CollapsibleCard title="弱いキー"><KeyList rows={s.weakKeys}/></CollapsibleCard></MotionSection><MotionSection><CollapsibleCard title="反応が遅いキー"><KeyList rows={s.slowKeys}/></CollapsibleCard></MotionSection></MotionGroup>
+    <MotionSection><CollapsibleCard title="頻出ミス" className="mt-6"><div className="grid gap-2">{s.mistakes.length ? s.mistakes.map((m) => <div key={`${m.expected}-${m.actual}`} className="flex justify-between rounded-lg bg-slate-50 p-3 font-mono"><span>{m.expected} → {m.actual}</span><span>{m.count}回</span></div>) : <p className="text-slate-500">ミスはありません。</p>}</div></CollapsibleCard></MotionSection>
+    <MotionGroup className="mt-6 flex flex-wrap gap-3"><MotionSection><Link href="/practice"><Button>{isFailed ? 'Strict Modeで再挑戦' : 'もう一度練習'}</Button></Link></MotionSection><MotionSection><Link href={weakestKey ? `/practice?weakKey=${encodeURIComponent(weakestKey)}` : '/practice'}><Button className="bg-slate-900 hover:bg-slate-800">弱点キーを練習</Button></Link></MotionSection><MotionSection><Link href="/analysis"><Button className="bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50">詳しく分析</Button></Link></MotionSection></MotionGroup>
   </main>;
 }
 

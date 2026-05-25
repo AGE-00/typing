@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock3, Flag, Pause, Play, RotateCcw, ShieldAlert, Target } from 'lucide-react';
+import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
 import { OptionBlock } from '@/components/practice-options/OptionBlock';
 import { OptionButton } from '@/components/practice-options/OptionButton';
 import { OptionCard } from '@/components/practice-options/OptionCard';
@@ -461,32 +462,38 @@ export default function PracticePage() {
   if (!isRunning) {
     return <main className="mx-auto max-w-5xl px-4 pb-16">
       <section className="py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <MotionSection className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <Badge className="bg-slate-100 text-slate-700">練習設定</Badge>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950">今日の練習を組む</h1>
             {weakKey ? <p className="mt-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700">キー「{weakKey}」を多めに出題します。</p> : null}
           </div>
           <Button onClick={start} className="min-h-12 px-6"><Play className="mr-2 h-5 w-5" />開始</Button>
-        </div>
+        </MotionSection>
 
-        <div className="kinetic-surface space-y-7 rounded-lg border border-slate-200 bg-white p-5 shadow-soft md:p-6">
-          <OptionBlock title="問題数">
-            <div className="flex flex-wrap gap-2">{questionOptions.map((count) => <OptionButton key={count} active={options.questionCount === count && !customCount} onClick={() => { setCustomCount(''); updateOption('questionCount', count); }}>{count}問</OptionButton>)}<label className="min-w-40"><span className="sr-only">任意の問題数</span><input className="min-h-11 w-full rounded-lg border border-slate-300 px-4 py-2.5" inputMode="numeric" placeholder="任意の問題数" value={customCount} onChange={(e) => setCustomCount(e.target.value.replace(/\D/g, ''))} /></label></div>
-          </OptionBlock>
-          <OptionBlock title="文章の長さ">
-            <div className="grid gap-3 md:grid-cols-4">{lengthOptions.map(([value, label]) => <OptionCard key={value} active={options.lengthType === value} onClick={() => updateOption('lengthType', value)} title={label} />)}<OptionCard active={options.lengthType === 'long'} onClick={() => updateOption('lengthType', 'long')} title="長文" /></div>
-          </OptionBlock>
-          <OptionBlock title="難易度">
-            <div className="grid gap-3 md:grid-cols-4">{difficultyOptions.map(([value, label]) => <OptionCard key={value} active={options.difficulty === value} onClick={() => updateOption('difficulty', value)} title={label} />)}</div>
-          </OptionBlock>
+        <MotionGroup className="kinetic-surface space-y-7 rounded-lg border border-slate-200 bg-white p-5 shadow-soft md:p-6">
+          <MotionSection>
+            <OptionBlock title="問題数">
+              <div className="flex flex-wrap gap-2">{questionOptions.map((count) => <OptionButton key={count} active={options.questionCount === count && !customCount} onClick={() => { setCustomCount(''); updateOption('questionCount', count); }}>{count}問</OptionButton>)}<label className="min-w-40"><span className="sr-only">任意の問題数</span><input className="min-h-11 w-full rounded-lg border border-slate-300 px-4 py-2.5" inputMode="numeric" placeholder="任意の問題数" value={customCount} onChange={(e) => setCustomCount(e.target.value.replace(/\D/g, ''))} /></label></div>
+            </OptionBlock>
+          </MotionSection>
+          <MotionSection>
+            <OptionBlock title="文章の長さ">
+              <div className="grid gap-3 md:grid-cols-4">{lengthOptions.map(([value, label]) => <OptionCard key={value} active={options.lengthType === value} onClick={() => updateOption('lengthType', value)} title={label} />)}<OptionCard active={options.lengthType === 'long'} onClick={() => updateOption('lengthType', 'long')} title="長文" /></div>
+            </OptionBlock>
+          </MotionSection>
+          <MotionSection>
+            <OptionBlock title="難易度">
+              <div className="grid gap-3 md:grid-cols-4">{difficultyOptions.map(([value, label]) => <OptionCard key={value} active={options.difficulty === value} onClick={() => updateOption('difficulty', value)} title={label} />)}</div>
+            </OptionBlock>
+          </MotionSection>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <MotionSection className="grid gap-4 md:grid-cols-3">
             <ToggleOptionCard active={options.strictMode} warning title="1ミス終了" description="緊張感を上げる" icon={<ShieldAlert className="h-5 w-5 text-red-600" />} onChange={(checked) => updateOption('strictMode', checked)} />
             <ToggleOptionCard active={options.focusMode} title="集中表示" description="練習画面を全画面化" icon={<Target className="h-5 w-5 text-blue-600" />} onChange={(checked) => updateOption('focusMode', checked)} />
             <div className="kinetic-surface kinetic-hover rounded-lg border border-slate-200 bg-slate-50 p-4"><div className="flex items-center gap-2 font-bold"><Clock3 className="h-5 w-5 text-slate-600" />制限時間</div><div className="mt-3 flex flex-wrap gap-2">{[null, 30, 60, 120].map((sec) => <OptionButton key={sec ?? 'none'} active={options.durationSec === sec} onClick={() => updateOption('durationSec', sec as PracticeSessionOptions['durationSec'])}>{sec ? `${sec}秒` : 'なし'}</OptionButton>)}</div></div>
-          </div>
-        </div>
+          </MotionSection>
+        </MotionGroup>
       </section>
     </main>;
   }
@@ -500,31 +507,31 @@ export default function PracticePage() {
   const progressStyle = { width: `${((questionIndex + progress / 100) / plan.length) * 100}%`, transitionDuration: motion.cssDuration };
 
   return <main className={`${options.focusMode ? 'fixed inset-0 z-50 max-w-none overflow-auto bg-slate-50 px-4 py-6 text-slate-950 md:px-8' : 'mx-auto max-w-6xl px-4 pb-16'}`}>
-    <div className={`mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4 ${options.focusMode ? 'max-w-6xl' : ''}`}>
+    <MotionSection className={`mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4 ${options.focusMode ? 'max-w-6xl' : ''}`}>
       <div><h1 className="text-2xl font-black">練習</h1><p className="text-sm text-slate-600">{questionIndex + 1} / {plan.length}{weakKey ? ` · ${weakKey}` : ''}{isPaused ? ' · 一時停止中' : ''}</p></div>
       <div className="flex flex-wrap gap-2"><SecondaryButton onClick={togglePause}>{isPaused ? <Play className="mr-2 h-4 w-4"/> : <Pause className="mr-2 h-4 w-4"/>}{isPaused ? '再開' : '一時停止'}</SecondaryButton>{options.focusMode ? <SecondaryButton onClick={() => updateOption('focusMode', false)}>集中表示を終了(Esc)</SecondaryButton> : null}<SecondaryButton onClick={() => void finishSession(promptResults, allStrokes, 'manual_end')}><Flag className="mr-2 h-4 w-4"/>終了</SecondaryButton>{!options.focusMode ? <SecondaryButton onClick={start}><RotateCcw className="mr-2 h-4 w-4"/>最初から</SecondaryButton> : null}</div>
-    </div>
-    {saveError ? <div className="mx-auto mb-5 flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800" role="alert">
+    </MotionSection>
+    {saveError ? <MotionSection className="mx-auto mb-5 flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800" role="alert">
       <span>{saveError}</span>
       <div className="flex gap-2">
         <SecondaryButton className="border-red-200 text-red-700 hover:bg-white" onClick={() => pendingFinish ? void finishSession(pendingFinish.promptResults, pendingFinish.allStrokes, pendingFinish.reason, pendingFinish.failure) : undefined}>再試行</SecondaryButton>
         <SecondaryButton className="border-red-200 text-red-700 hover:bg-white" onClick={start}>破棄して最初から</SecondaryButton>
       </div>
-    </div> : null}
-    <section className={`mx-auto max-w-6xl space-y-5 transition-colors ${options.focusMode ? 'text-slate-950' : ''}`} aria-label="タイピングゲーム盤面">
-      <div className={`kinetic-rise flex flex-wrap items-center gap-x-5 gap-y-2 text-sm ${options.focusMode ? 'text-slate-300' : 'text-slate-600'}`}>
+    </MotionSection> : null}
+    <MotionGroup as="section" className={`mx-auto max-w-6xl space-y-5 transition-colors ${options.focusMode ? 'text-slate-950' : ''}`} aria-label="タイピングゲーム盤面">
+      <MotionSection className={`kinetic-rise flex flex-wrap items-center gap-x-5 gap-y-2 text-sm ${options.focusMode ? 'text-slate-300' : 'text-slate-600'}`}>
         <span>正確率 <strong className="font-mono text-slate-950">{accuracy.toFixed(1)}%</strong></span>
         <span>KPM <strong className="font-mono text-slate-950">{kpm.toFixed(0)}</strong></span>
         <span className="inline-flex items-center gap-1"><Clock3 className="h-4 w-4" />{remainingTimeMs === null ? <FormatTime ms={effectiveElapsedMs} /> : <FormatTime ms={remainingTimeMs} />}</span>
         <StrictModeBadge enabled={options.strictMode} />
-      </div>
-      {options.strictMode ? <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800"><ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />1ミスで終了し、結果画面にキーのずれを残します。</div> : null}
-      <div className="h-1.5 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-slate-800 transition-all" style={progressStyle} /></div>
-      <TypingPrompt text={currentText?.text} reading={reading} focusMode={options.focusMode} hasRecentMistake={hasRecentMistake} />
-      <RomanizedGuide typed={typed} target={displayTarget} progress={progress} motionLevel={effectiveMotionLevel} />
+      </MotionSection>
+      {options.strictMode ? <MotionSection className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800"><ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />1ミスで終了し、結果画面にキーのずれを残します。</MotionSection> : null}
+      <MotionSection className="h-1.5 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-slate-800 transition-all" style={progressStyle} /></MotionSection>
+      <MotionSection><TypingPrompt text={currentText?.text} reading={reading} focusMode={options.focusMode} hasRecentMistake={hasRecentMistake} /></MotionSection>
+      <MotionSection><RomanizedGuide typed={typed} target={displayTarget} progress={progress} motionLevel={effectiveMotionLevel} /></MotionSection>
       <input ref={inputRef} aria-label="typing-input" className="h-0 w-0 opacity-0" value={typed} onChange={() => undefined} autoFocus inputMode="none" />
-      <TypingStatsBar mistakeCount={mistakeCount} typedLength={typed.length} targetLength={displayTarget.length} accuracy={accuracy} kpm={kpm} wpm={wpm} streak={streak} />
-      <Button onClick={() => inputRef.current?.focus()} className="min-h-12 w-full bg-slate-950 hover:bg-slate-800">入力フォーカスを戻す</Button>
-    </section>
+      <MotionSection><TypingStatsBar mistakeCount={mistakeCount} typedLength={typed.length} targetLength={displayTarget.length} accuracy={accuracy} kpm={kpm} wpm={wpm} streak={streak} /></MotionSection>
+      <MotionSection><Button onClick={() => inputRef.current?.focus()} className="min-h-12 w-full bg-slate-950 hover:bg-slate-800">入力フォーカスを戻す</Button></MotionSection>
+    </MotionGroup>
   </main>;
 }

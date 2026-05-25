@@ -108,12 +108,12 @@ tests/
 
 ## 開発コマンド
 
-npm install
-npm run dev      # 開発サーバー起動
-npm run build    # production build
-npm run start    # build後のproduction server起動
-npm test         # Vitest実行
-npm run lint     # TypeScript型チェック(tsc --noEmit)
+bun install
+bun run dev      # 開発サーバー起動
+bun run build    # production build
+bun run start    # build後のproduction server起動
+bun run test     # Vitest実行
+bun run lint     # TypeScript型チェック(tsc --noEmit)
 
 ## 開発時の注意
 
@@ -128,6 +128,16 @@ npm run lint     # TypeScript型チェック(tsc --noEmit)
 
 変更後は最低限以下を実行してください。
 
-npm test
-npm run lint
-npm run build
+bun run test
+bun run lint
+bun run build
+
+## パッケージ管理
+
+このプロジェクトでは、依存関係管理とスクリプト実行に Bun 1.3.14 を使います。
+
+移行時のローカルベンチメモ:
+
+- lockfile なしの clean install: Bun 1.89秒、npm 19.02秒
+- `lint` / `test`: Bun と npm はほぼ同等
+- `build`: `next build` の処理が支配的なため、Bun と npm はほぼ同等

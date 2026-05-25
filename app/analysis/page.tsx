@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { MotionGroup, MotionSection } from '@/components/motion/MotionSection';
 import { Button, SecondaryButton } from '@/components/ui';
 import { deleteSession, getAnalysisSessions, getSessionCount } from '@/lib/db';
 import type { MistakeStat, PracticeSession } from '@/lib/types';
@@ -65,7 +66,7 @@ export default function AnalysisPage() {
   };
 
   return <main className="mx-auto max-w-6xl px-4 pb-16">
-    <header className="kinetic-rise flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 py-8">
+    <MotionSection as="header" className="kinetic-rise flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 py-8">
       <div>
         <h1 className="text-4xl font-black tracking-tight text-slate-950">次の練習</h1>
         <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
@@ -76,10 +77,10 @@ export default function AnalysisPage() {
         </div>
       </div>
       <Link href="/practice"><Button>練習する</Button></Link>
-    </header>
+    </MotionSection>
 
-    <section className="grid gap-5 py-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <div className="kinetic-surface kinetic-hover rounded-lg border border-slate-900 bg-slate-950 p-7 text-white shadow-soft">
+    <MotionGroup as="section" className="grid gap-5 py-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <MotionSection className="kinetic-surface kinetic-hover rounded-lg border border-slate-900 bg-slate-950 p-7 text-white shadow-soft">
         <div className="text-sm font-semibold text-slate-300">今日のメニュー</div>
         <h2 className="mt-3 text-3xl font-black leading-tight">{analytics.suggestion.title}</h2>
         <p className="mt-4 max-w-2xl leading-7 text-slate-300">{analytics.suggestion.body}</p>
@@ -87,17 +88,17 @@ export default function AnalysisPage() {
           <Link href={analytics.suggestion.href}><Button className="bg-white text-slate-950 hover:bg-slate-100">{analytics.suggestion.cta}</Button></Link>
           <Link href="/practice"><SecondaryButton className="border-white/20 bg-white/10 text-white hover:bg-white/15">通常練習</SecondaryButton></Link>
         </div>
-      </div>
+      </MotionSection>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <MotionGroup className="grid gap-3 sm:grid-cols-2">
         <DecisionMetric label="正確率" value={formatPercent(analytics.avgAccuracy)} note={analytics.avgAccuracy >= 96 ? '安定' : '精度優先'} />
         <DecisionMetric label="平均WPM" value={analytics.avgWpm.toFixed(1)} note={`最高 ${analytics.bestWpm.toFixed(1)}`} />
         <DecisionMetric label="優先キー" value={analytics.weakTarget?.key ?? '-'} note={analytics.weakTarget ? `${analytics.weakTarget.mistakes} ミス` : '記録待ち'} />
         <DecisionMetric label="連続日数" value={`${analytics.streakDays}`} note={analytics.streakDays ? '今日まで継続' : '今日から開始'} />
-      </div>
-    </section>
+      </MotionGroup>
+    </MotionGroup>
 
-    <section className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+    <MotionGroup as="section" className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
       <Panel title="推移">
         <div className="h-72">{analytics.progress.length ? <ResponsiveContainer width="100%" height="100%">
           <LineChart data={analytics.progress} margin={{ left: -10, right: 18, top: 12, bottom: 18 }}>
@@ -134,9 +135,9 @@ export default function AnalysisPage() {
           <Link href={`/practice?weakKey=${encodeURIComponent(analytics.weakTarget.key)}`}><SecondaryButton className="w-full">このキーで練習</SecondaryButton></Link>
         </div> : <Empty />}
       </Panel>
-    </section>
+    </MotionGroup>
 
-    <section className="mt-5 grid gap-5 lg:grid-cols-2">
+    <MotionGroup as="section" className="mt-5 grid gap-5 lg:grid-cols-2">
       <Panel title="弱いキー">
         <div className="h-72">{analytics.keys.length ? <ResponsiveContainer width="100%" height="100%">
           <BarChart data={analytics.keys.map((key) => ({ key: key.key, mistakes: key.mistakes, accuracy: Number(key.accuracy.toFixed(1)) }))} margin={{ left: -10, right: 12, top: 12, bottom: 12 }}>
@@ -160,9 +161,9 @@ export default function AnalysisPage() {
           </BarChart>
         </ResponsiveContainer> : <Empty />}</div>
       </Panel>
-    </section>
+    </MotionGroup>
 
-    <section className="mt-5 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+    <MotionGroup as="section" className="mt-5 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
       <Panel title="ミスパターン">
         <div className="divide-y divide-slate-200">
           {analytics.mistakes.length ? analytics.mistakes.map((mistake) => <div key={`${mistake.expected}-${mistake.actual}`} className="flex items-center justify-between py-3 font-mono">
@@ -183,7 +184,7 @@ export default function AnalysisPage() {
           </div>) : <Empty />}
         </div>
       </Panel>
-    </section>
+    </MotionGroup>
   </main>;
 }
 
@@ -281,18 +282,18 @@ function buildSuggestion({
 }
 
 function DecisionMetric({ label, note, value }: { label: string; note: string; value: string }) {
-  return <div className="kinetic-surface kinetic-hover rounded-lg border border-slate-200 bg-white p-4">
+  return <MotionSection className="kinetic-surface kinetic-hover rounded-lg border border-slate-200 bg-white p-4">
     <div className="text-sm text-slate-500">{label}</div>
     <div className="mt-1 font-mono text-3xl font-black text-slate-950">{value}</div>
     <div className="mt-2 text-xs text-slate-500">{note}</div>
-  </div>;
+  </MotionSection>;
 }
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
-  return <section className="kinetic-surface kinetic-rise rounded-lg border border-slate-200 bg-white p-5">
+  return <MotionSection as="section" className="kinetic-surface kinetic-rise rounded-lg border border-slate-200 bg-white p-5">
     <h2 className="font-bold text-slate-950">{title}</h2>
     <div className="mt-4">{children}</div>
-  </section>;
+  </MotionSection>;
 }
 
 function Empty() {
